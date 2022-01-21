@@ -1,6 +1,4 @@
 import win32com.client
-import array
-import PPCOM
 from PPCOM import enumInterfaces, enumFrequencies, enumSonosArrays, enumVoltages
 
 
@@ -8,7 +6,11 @@ class PortsError(RuntimeError):
     pass
 
 
-class InitError(RuntimeError):
+class DeviceError(RuntimeError):
+    pass
+
+
+class PlatformError(RuntimeError):
     pass
 
 
@@ -41,22 +43,48 @@ class PSocFlashController(object):
 
     def init_port(self):
         # power on
-        self.programmer.SetPowerVoltage("5.0V")
+        self.programmer.SetPowerVoltage("3.3V")
         (result, last_result) = self.programmer.PowerOn()
         print(result)
         if not succeed(result):
-            raise InitError("Could not power on")
+            raise DeviceError("Could not power on")
 
         # set protocol, connector, and frequency
         (result, last_result) = self.programmer.SetProtocol(enumInterfaces.SWD)
         if not succeed(result):
-            raise InitError("Could not set protocol")
+            raise DeviceError("Could not set protocol")
         self.programmer.SetProtocolConnector(1)  # 1 should be 10 pin connector ?
         self.programmer.SetProtocolClock(enumFrequencies.FREQ_01_6)  # came from the UI programmer default settings, idk
+
+    def apply_hexfile(self, hex_file):
+        (result, image_size, last_result) = self.programmer.HEX_ReadFile(hex_file)
+        if not succeed(result):
+            raise PlatformError("Could not load hex file")
+
+        self.programmer.SetAcquireMode("Reset")
+        (result, _) = self.programmer.DAP_Acquire()
+        if not succeed(result):
+            raise DeviceError("Could not acquire")
+
+        (result, chip_id, _) = self.programmer.PSoC4_GetSiliconID()
+        if not succeed(result):
+            raise DeviceError("Could not get chip id")
+
+        (result, hex_chip_id, _) = self.programmer.HEX_ReadJtagID()
+        if not succeed(result):
+            raise PlatformError("Could not get chip id from hex file")
+        chip_id = bytes(chip_id)
+        hex_chip_id = bytes(hex_chip_id)
+        for i in range(4):
+            if i == 2:
+                continue
+            if chip_id[i] != hex_chip_id[i]:
+                raise PlatformError("Chip id mismatch, wrong file file")
 
 
 if __name__ == "__main__":
     p = PSocFlashController()
     p.open_port()
     p.init_port()
+    p.apply_hexfile("E:\\working_case\\Projects_2021\\00_Skeling\\firmware\\fw.hex")
     p.close_port()
