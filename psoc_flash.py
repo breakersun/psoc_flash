@@ -20,6 +20,9 @@ def succeed(hr):
 
 class PSocFlashController(object):
     def __init__(self):
+        self.row_size = None
+        self.rows_count = None
+        self.image_size = None
         self.pre_checksum_privileged = None
         self.programmer = win32com.client.Dispatch("PSoCProgrammerCOM.PSoCProgrammerCOM_Object")
 
@@ -61,6 +64,8 @@ class PSocFlashController(object):
         (result, image_size, last_result) = self.programmer.HEX_ReadFile(hex_file)
         if not succeed(result):
             raise PlatformError("Could not load hex file")
+
+        self.image_size = image_size
 
         self.programmer.SetAcquireMode("Reset")
         (result, _) = self.programmer.DAP_Acquire()
@@ -109,11 +114,25 @@ class PSocFlashController(object):
         if checksum_user != hex_checksum:
             raise PlatformError("Checksum mismatch")
 
+    def get_rows_count(self):
+        (result, rows_per_array, row_size, _) = self.programmer.PSoC4_GetFlashInfo()
+        if not succeed(result):
+            raise DeviceError("Could not get flash info")
+
+        self.rows_count = self.image_size / row_size
+        self.row_size = row_size
+
+    def program_flash(self):
+        (result, _) = self.programmer.PSoC4_ProgramFlash(0x8000)
+        if not succeed(result):
+            raise DeviceError("Could not program flash")
+
+
 if __name__ == "__main__":
     p = PSocFlashController()
     p.open_port()
     p.init_port()
     p.apply_hexfile("E:\\working_case\\Projects_2021\\00_Skeling\\firmware\\fw.hex")
     p.erase_chip()
-
+    p.get_rows_count()
     p.close_port()
