@@ -115,4 +115,5 @@ if __name__ == "__main__":
     p.init_port()
     p.apply_hexfile("E:\\working_case\\Projects_2021\\00_Skeling\\firmware\\fw.hex")
     p.erase_chip()
+
     p.close_port()
