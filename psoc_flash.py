@@ -129,7 +129,7 @@ class PSocFlashController(object):
                 raise DeviceError(f"Could not program row {i}")
 
     def verify_flash(self):
-        for i in track(range(0, self.rows_count), description="Verifying flash..."):
+        for i in track(range(0, self.rows_count), description="Verifying flash...  "):
             (result, verified, _) = self.programmer.PSoC4_VerifyRowFromHex(i)
             if not succeed(result):
                 raise DeviceError(f"Could not verify row {i}")
