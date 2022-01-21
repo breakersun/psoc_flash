@@ -2,6 +2,7 @@ import win32com.client
 from PPCOM import enumInterfaces, enumFrequencies, enumSonosArrays, enumVoltages
 from rich.progress import track
 
+
 class PortsError(RuntimeError):
     pass
 
@@ -141,6 +142,12 @@ class PSocFlashController(object):
             raise DeviceError(f"Could not backup row {row_id}")
         return readout
 
+    def restore_row(self, row_id, row_data: memoryview):
+        (result, _) = self.programmer.PSoC4_WriteRow(row_id, row_data)
+        if not succeed(result):
+            raise DeviceError(f"Could not restore row {row_id}")
+
+
 if __name__ == "__main__":
     p = PSocFlashController()
     p.open_port()
@@ -152,5 +159,6 @@ if __name__ == "__main__":
     p.program_flash()
     p.verify_flash()
     p.post_checksum()
-    print(bytes(p.backup_row(0)))
+    backup = p.backup_row(0x00)
+    p.restore_row(0x00, backup)
     p.close_port()
