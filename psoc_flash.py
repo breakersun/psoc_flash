@@ -1,6 +1,6 @@
 import win32com.client
 from PPCOM import enumInterfaces, enumFrequencies, enumSonosArrays, enumVoltages
-
+from rich.progress import track
 
 class PortsError(RuntimeError):
     pass
@@ -123,13 +123,13 @@ class PSocFlashController(object):
         self.row_size = row_size
 
     def program_flash(self):
-        for i in range(0, self.rows_count):
+        for i in track(range(0, self.rows_count), description="Programming flash..."):
             (result, _) = self.programmer.PSoC4_ProgramRowFromHex(i)
             if not succeed(result):
                 raise DeviceError(f"Could not program row {i}")
 
     def verify_flash(self):
-        for i in range(0, self.rows_count):
+        for i in track(range(0, self.rows_count), description="Verifying flash..."):
             (result, verified, _) = self.programmer.PSoC4_VerifyRowFromHex(i)
             if not succeed(result):
                 raise DeviceError(f"Could not verify row {i}")
