@@ -81,10 +81,15 @@ class PSocFlashController(object):
             if chip_id[i] != hex_chip_id[i]:
                 raise PlatformError("Chip id mismatch, wrong file file")
 
+    def erase_chip(self):
+        (result, _) = self.programmer.PSoC4_EraseAll()
+        if not succeed(result):
+            raise DeviceError("Could not erase chip")
 
 if __name__ == "__main__":
     p = PSocFlashController()
     p.open_port()
     p.init_port()
     p.apply_hexfile("E:\\working_case\\Projects_2021\\00_Skeling\\firmware\\fw.hex")
+    p.erase_chip()
     p.close_port()
