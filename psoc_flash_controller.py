@@ -135,6 +135,11 @@ class PSocFlashController(object):
             if not verified:
                 raise DeviceError(f"Row {i} verification failed")
 
+    def backup_row(self, row_id) -> memoryview:
+        (result, readout, _) = self.programmer.PSoC4_ReadRow(row_id)
+        if not succeed(result):
+            raise DeviceError(f"Could not backup row {row_id}")
+        return readout
 
 if __name__ == "__main__":
     p = PSocFlashController()
@@ -147,4 +152,5 @@ if __name__ == "__main__":
     p.program_flash()
     p.verify_flash()
     p.post_checksum()
+    print(bytes(p.backup_row(0)))
     p.close_port()
