@@ -20,6 +20,7 @@ def succeed(hr):
 
 class PSocFlashController(object):
     def __init__(self):
+        self.pre_checksum_privileged = None
         self.programmer = win32com.client.Dispatch("PSoCProgrammerCOM.PSoCProgrammerCOM_Object")
 
     def open_port(self):
@@ -85,6 +86,28 @@ class PSocFlashController(object):
         (result, _) = self.programmer.PSoC4_EraseAll()
         if not succeed(result):
             raise DeviceError("Could not erase chip")
+
+    def pre_checksum(self):
+        (result, pre_checksum_privileged, _) = self.programmer.PSoC4_CheckSum(0x8000)
+        if not succeed(result):
+            raise DeviceError("Could not pre checksum")
+        self.pre_checksum_privileged = pre_checksum_privileged
+
+    def post_checksum(self):
+        (result, post_checksum_privileged, _) = self.programmer.PSoC4_CheckSum(0x8000)
+        if not succeed(result):
+            raise DeviceError("Could not post checksum")
+        checksum_user = post_checksum_privileged - self.pre_checksum_privileged
+
+        (result, hex_checksum, _) = self.programmer.HEX_ReadChecksum()
+        if not succeed(result):
+            raise PlatformError("Could not get checksum from hex file")
+
+        checksum_user = checksum_user & 0xFFFF
+        hex_checksum = hex_checksum & 0xFFFF
+
+        if checksum_user != hex_checksum:
+            raise PlatformError("Checksum mismatch")
 
 if __name__ == "__main__":
     p = PSocFlashController()
