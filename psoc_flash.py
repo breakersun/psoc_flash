@@ -119,13 +119,22 @@ class PSocFlashController(object):
         if not succeed(result):
             raise DeviceError("Could not get flash info")
 
-        self.rows_count = self.image_size / row_size
+        self.rows_count = int(self.image_size / row_size)
         self.row_size = row_size
 
     def program_flash(self):
-        (result, _) = self.programmer.PSoC4_ProgramFlash(0x8000)
-        if not succeed(result):
-            raise DeviceError("Could not program flash")
+        for i in range(0, self.rows_count):
+            (result, _) = self.programmer.PSoC4_ProgramRowFromHex(i)
+            if not succeed(result):
+                raise DeviceError(f"Could not program row {i}")
+
+    def verify_flash(self):
+        for i in range(0, self.rows_count):
+            (result, verified, _) = self.programmer.PSoC4_VerifyRowFromHex(i)
+            if not succeed(result):
+                raise DeviceError(f"Could not verify row {i}")
+            if not verified:
+                raise DeviceError(f"Row {i} verification failed")
 
 
 if __name__ == "__main__":
@@ -135,4 +144,8 @@ if __name__ == "__main__":
     p.apply_hexfile("E:\\working_case\\Projects_2021\\00_Skeling\\firmware\\fw.hex")
     p.erase_chip()
     p.get_rows_count()
+    p.pre_checksum()
+    p.program_flash()
+    p.verify_flash()
+    p.post_checksum()
     p.close_port()
