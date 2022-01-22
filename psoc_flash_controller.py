@@ -148,6 +148,7 @@ class PSocFlashController(object):
             raise DeviceError(f"Could not restore row {row_id}")
 
 
+# this is some quick test code, don't use it in production
 if __name__ == "__main__":
     p = PSocFlashController()
     p.open_port()
