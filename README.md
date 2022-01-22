@@ -5,7 +5,7 @@ rewirte psoc flash tool with python for PSoC4 family, based on official python C
 ## Install
 
 1. install official psoc programmer
-2. install python10 and setting python paths
+2. install python310 and setting python paths
 3. pip install -r requirements.txt
 
 ## Usage
