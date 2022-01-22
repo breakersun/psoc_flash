@@ -153,7 +153,7 @@ if __name__ == "__main__":
     p = PSocFlashController()
     p.open_port()
     p.init_port()
-    p.apply_hexfile("E:\\working_case\\Projects_2021\\00_Skeling\\firmware\\fw.hex")
+    p.apply_hexfile("E:\\test_path\fw.hex")
     p.erase_chip()
     p.get_rows_count()
     p.pre_checksum()
