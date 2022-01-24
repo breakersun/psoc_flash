@@ -47,4 +47,4 @@ if __name__ == '__main__':
     args = parse_args()
 
     flasher = FlasherWithBackup()
-    flasher.flash_helper(args.file_path)
+    flasher.flash_helper(args.file_path.resolve())
