@@ -11,21 +11,26 @@ def parse_args():
 
 
 class FlasherWithBackup(PSocFlashController):
-    def __init__(self, row_ids=None):
+    def __init__(self, backup_row_start=None, backup_row_end=None):
         super().__init__()
-
-        if row_ids is None:
-            self.row_ids = [0x00, 0x01]  # default to back up row 00 01 for testing
-        else:
-            self.row_ids = row_ids
+        self.backup_row_start = backup_row_start
+        self.backup_row_end = backup_row_end
+        if self.backup_row_start is not None \
+                and self.backup_row_end is not None:
+            assert (self.backup_row_start < self.backup_row_end)
         self.records = {}
 
     def pre_steps(self):
-        for row in track(self.row_ids, description='Backuping rows'):
+        if self.backup_row_start is None or self.backup_row_end is None:
+            return
+        for row in track(range(self.backup_row_start, self.backup_row_end + 1),
+                         description='Backing up rows'):
             self.records[row] = self.backup_row(row)
 
     def post_steps(self):
-        for row in track(self.row_ids, description='Restoring rows'):
+        if self.backup_row_start is None or self.backup_row_end is None:
+            return
+        for row, record in track(self.records.items(), description='Restoring rows'):
             self.restore_row(row, self.records[row])
 
     def flash_helper(self, hex_file):
@@ -46,5 +51,5 @@ class FlasherWithBackup(PSocFlashController):
 if __name__ == '__main__':
     args = parse_args()
 
-    flasher = FlasherWithBackup()
+    flasher = FlasherWithBackup(0x13, 0x53)
     flasher.flash_helper(args.file_path.resolve())
