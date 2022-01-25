@@ -48,7 +48,7 @@ class PSocFlashController(object):
 
     def init_port(self):
         # power on
-        self.programmer.SetPowerVoltage("3.3V")
+        self.programmer.SetPowerVoltage("5.0V")
         (result, last_result) = self.programmer.PowerOn()
         if not succeed(result):
             raise DeviceError("Could not power on")
