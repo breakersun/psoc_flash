@@ -31,7 +31,7 @@ class FlasherWithBackup(PSocFlashController):
         if self.backup_row_start is None or self.backup_row_end is None:
             return
         for row, record in track(self.records.items(), description='Restoring rows'):
-            self.restore_row(row, self.records[row])
+            self.restore_row(row, record)
 
     def flash_helper(self, hex_file):
         self.open_port()
