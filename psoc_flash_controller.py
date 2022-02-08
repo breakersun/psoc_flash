@@ -1,6 +1,7 @@
 import win32com.client
-from PPCOM import enumInterfaces, enumFrequencies, enumSonosArrays, enumVoltages
 from rich.progress import track
+
+from PPCOM import enumInterfaces, enumFrequencies
 
 
 class PortsError(RuntimeError):
