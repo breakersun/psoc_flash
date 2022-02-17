@@ -45,6 +45,7 @@ class FlasherWithBackup(PSocFlashController):
         self.verify_flash()
         self.post_checksum()
         self.post_steps()
+        self.power_off()
         self.close_port()
 
 

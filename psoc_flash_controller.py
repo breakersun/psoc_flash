@@ -47,6 +47,11 @@ class PSocFlashController(object):
         if not succeed(result):
             raise PortsError("Could not close port")
 
+    def power_off(self):
+        (result, last_result) = self.programmer.PowerOff()
+        if not succeed(result):
+            raise DeviceError("Could not power off")
+
     def init_port(self):
         # power on
         self.programmer.SetPowerVoltage("5.0V")
