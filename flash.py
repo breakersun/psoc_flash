@@ -2,11 +2,21 @@ import argparse
 import pathlib
 from psoc_flash_controller import PSocFlashController
 from rich.progress import track
+import json
+
+
+class MetaInfo:
+    def __init__(self):
+        with open('info.meta') as info_text:
+            self.version_data = json.load(info_text)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Flash a .hex file to a device')
     parser.add_argument('file_path', type=pathlib.Path, help='path to hex file')
+    meta_info = MetaInfo()
+    parser.add_argument('--version', action='version',
+                        version=f'{meta_info.version_data.get("FullSemVer")}')
     return parser.parse_args()
 
 
