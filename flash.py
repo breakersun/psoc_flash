@@ -7,8 +7,13 @@ import json
 
 class MetaInfo:
     def __init__(self):
+        self.version = None
+
+    def get_version(self):
         with open('info.meta') as info_text:
-            self.version_data = json.load(info_text)
+            version_data = json.load(info_text)
+            self.version = version_data.get('FullSemVer')
+        return self.version
 
 
 def parse_args():
@@ -16,7 +21,7 @@ def parse_args():
     parser.add_argument('file_path', type=pathlib.Path, help='path to hex file')
     meta_info = MetaInfo()
     parser.add_argument('--version', action='version',
-                        version=f'{meta_info.version_data.get("FullSemVer")}')
+                        version=f'{meta_info.get_version()}')
     return parser.parse_args()
 
 
