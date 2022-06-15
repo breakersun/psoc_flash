@@ -6,14 +6,24 @@ on:
     - '*'
 
 jobs:
+  release:
+    runs-on: windows-latest
 
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-    - uses: actions/checkout@v2
-    - uses: ncipollo/release-action@v1
-      with:
-        artifacts: "flash.py"
-        token: ${{ secrets.GITHUB_TOKEN }}
+      - name: install gitversion.portable
+        run: choco install gitversion.portable
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - run: pip install -r requirements.txt pyinstaller
+      - run: pyinstaller flash.py
+      - run: gitversion > .\dist\flash\info.meta
+      - name: create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "dist/*"
+          # bodyFile: "body.md"
+          token: ${{ secrets.GITHUB_TOKEN }}
