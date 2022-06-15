@@ -11,12 +11,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - name: install gitversion
+      - name: install gitversion.portable
         run: choco install gitversion.portable
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.10
+          python-version: 3.9
       - run: pip install -r requirements.txt pyinstaller
       - run: pyinstaller flash.py
       - run: gitversion > ./dist/flash/info.meta
