@@ -21,9 +21,9 @@ jobs:
       - run: pip install -r requirements.txt pyinstaller
       - run: pyinstaller flash.py
       - run: gitversion > .\dist\flash\info.meta
-      - uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r dist.zip dist
+      - run: |
+          # powershell Compress-Archive dist dist.zip
+          Compress-Archive dist dist.zip
       - name: create release
         uses: ncipollo/release-action@v1
         with:
