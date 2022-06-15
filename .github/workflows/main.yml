@@ -21,7 +21,7 @@ jobs:
           python-version: 3.9
       - run: pip install -r requirements.txt pyinstaller
       - run: pyinstaller flash.py
-      - run: gitversion > ./dist/flash/info.meta
+      - run: gitversion > .\dist\flash\info.meta
       - uses: actions/upload-artifact@v2
         with:
           path: dist/*
