@@ -66,14 +66,14 @@ class PSocFlashController(object):
         self.programmer.SetProtocolConnector(1)  # 1 should be 10 pin connector ?
         self.programmer.SetProtocolClock(enumFrequencies.FREQ_01_6)  # came from the UI programmer default settings, idk
 
-    def apply_hexfile(self, hex_file):
+    def apply_hexfile(self, hex_file, acquire_mode='Reset'):
         (result, image_size, last_result) = self.programmer.HEX_ReadFile(hex_file)
         if not succeed(result):
             raise PlatformError("Could not load hex file")
 
         self.image_size = image_size
 
-        self.programmer.SetAcquireMode("Reset")
+        self.programmer.SetAcquireMode(acquire_mode)
         (result, _) = self.programmer.DAP_Acquire()
         if not succeed(result):
             raise DeviceError("Could not acquire")
