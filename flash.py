@@ -34,8 +34,8 @@ class FlasherWithBackup(PSocFlashController):
             self.backup_row_end = 0x53
             self.acquire_mode = 'Reset'
         elif product_id == 'ccg3pa':
-            self.backup_row_start = 0x13
-            self.backup_row_end = 0x53
+            self.backup_row_start = 0x1E9
+            self.backup_row_end = 0x1FF
             self.acquire_mode = 'Power'
         else:
             raise ValueError(f'Unknown product id: {product_id}')
