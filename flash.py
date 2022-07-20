@@ -18,7 +18,7 @@ class MetaInfo:
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Flash a .hex file to a device')
-    parser.add_argument('product_id', help='Product ID of the device')
+    parser.add_argument('product_id', help='Product ID of the device, now supported: ccg3pa, ccg5')
     parser.add_argument('file_path', type=pathlib.Path, help='path to hex file')
     meta_info = MetaInfo()
     parser.add_argument('--version', action='version',
