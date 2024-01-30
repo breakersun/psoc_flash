@@ -30,8 +30,8 @@ class FlasherWithBackup(PSocFlashController):
     def __init__(self, product_id=None):
         super().__init__()
         if product_id == 'ccg5':
-            self.backup_row_start = 0x13
-            self.backup_row_end = 0x53
+            self.backup_row_start = 0x1f7
+            self.backup_row_end = 0x1fa
             self.acquire_mode = 'Reset'
         elif product_id == 'ccg3pa':
             self.backup_row_start = 0x1E9
