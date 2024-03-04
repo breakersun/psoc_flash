@@ -23,6 +23,7 @@ def parse_args():
     meta_info = MetaInfo()
     parser.add_argument('--version', action='version',
                         version=f'{meta_info.get_version()}')
+    parser.add_argument('--atmode', action='store_true', help=' If this parameter exists, re-enter at mode')
     return parser.parse_args()
 
 
@@ -41,24 +42,43 @@ class FlasherWithBackup(PSocFlashController):
             raise ValueError(f'Unknown product id: {product_id}')
         self.records = {}
 
-    def pre_steps(self):
+    def __mem_calculate_byte_checksum(self, records, size):
+        checksum = 0
+        for index in range(size):
+            checksum += records[index]
+        return (1 + (~checksum)) & 0xFF
+
+    def __enable_atmode(self, records):
+        records[0] = 0
+        records[1] = 0
+        records[2] = 0
+        records[3] = 0
+        checksum = self.__mem_calculate_byte_checksum(records, len(records) - 1)
+        records[255] = checksum
+        return
+
+    def pre_steps(self, atmode=False):
         if self.backup_row_start is None or self.backup_row_end is None:
             return
         for row in track(range(self.backup_row_start, self.backup_row_end + 1),
                          description='Backing up rows'):
             self.records[row] = self.backup_row(row)
 
+        if atmode:
+            self.__enable_atmode(self.records[self.backup_row_start])
+            self.__enable_atmode(self.records[self.backup_row_start + 1])
+            
     def post_steps(self):
         if self.backup_row_start is None or self.backup_row_end is None:
             return
         for row, record in track(self.records.items(), description='Restoring rows'):
             self.restore_row(row, record)
 
-    def flash_helper(self, hex_file):
+    def flash_helper(self, hex_file, atmode=False):
         self.open_port()
         self.init_port()
         self.apply_hexfile(hex_file, self.acquire_mode)
-        self.pre_steps()
+        self.pre_steps(atmode)
         self.erase_chip()
         self.get_rows_count()
         self.pre_checksum()
@@ -73,4 +93,4 @@ class FlasherWithBackup(PSocFlashController):
 if __name__ == '__main__':
     args = parse_args()
     flasher = FlasherWithBackup(args.product_id)
-    flasher.flash_helper(args.file_path.resolve())
+    flasher.flash_helper(args.file_path.resolve(), args.atmode)
