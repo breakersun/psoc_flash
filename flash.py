@@ -42,18 +42,18 @@ class FlasherWithBackup(PSocFlashController):
             raise ValueError(f'Unknown product id: {product_id}')
         self.records = {}
 
-    def __mem_calculate_byte_checksum(self, records, size):
+    def _mem_calculate_byte_checksum(self, records, size):
         checksum = 0
         for index in range(size):
             checksum += records[index]
         return (1 + (~checksum)) & 0xFF
 
-    def __enable_atmode(self, records):
+    def _enable_atmode(self, records):
         records[0] = 0
         records[1] = 0
         records[2] = 0
         records[3] = 0
-        checksum = self.__mem_calculate_byte_checksum(records, len(records) - 1)
+        checksum = self._mem_calculate_byte_checksum(records, len(records) - 1)
         records[255] = checksum
         return
 
@@ -65,8 +65,8 @@ class FlasherWithBackup(PSocFlashController):
             self.records[row] = self.backup_row(row)
 
         if atmode:
-            self.__enable_atmode(self.records[self.backup_row_start])
-            self.__enable_atmode(self.records[self.backup_row_start + 1])
+            self._enable_atmode(self.records[self.backup_row_start])
+            self._enable_atmode(self.records[self.backup_row_start + 1])
             
     def post_steps(self):
         if self.backup_row_start is None or self.backup_row_end is None:
