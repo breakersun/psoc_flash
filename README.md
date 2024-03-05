@@ -12,13 +12,13 @@ rewirte psoc flash tool with python for PSoC4 family, based on official python C
 
 ```
 python flash.py ccg3pa path/to/hexfile.hex
-python flash.py ccg3pa path/to/hexfile.hex --atmode
 ```
 
 or
 
 ```
 python flash.py ccg5 path/to/hexfile.hex
+python flash.py ccg5 path/to/hexfile.hex --atmode
 ```
 
 if pre-compiled executables are used:
