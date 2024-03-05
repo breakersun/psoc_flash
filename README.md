@@ -12,13 +12,15 @@ rewirte psoc flash tool with python for PSoC4 family, based on official python C
 
 ```
 python flash.py ccg3pa path/to/hexfile.hex
-python flash.py ccg3pa path/to/hexfile.hex --atmode
 ```
 
 or
 
 ```
 python flash.py ccg5 path/to/hexfile.hex
+
+// put device into factory test mode (AT mode)
+python flash.py ccg5 path/to/hexfile.hex --atmode
 ```
 
 if pre-compiled executables are used:
@@ -26,6 +28,7 @@ if pre-compiled executables are used:
 ```
 flash.exe ccg3pa path/to/hexfile.hex
 flash.exe ccg5 path/to/hexfile.hex
+// put device into factory test mode (AT mode)
 flash.exe ccg5 path/to/hexfile.hex --atmode
 ```
 
