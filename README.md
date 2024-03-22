@@ -10,24 +10,28 @@ rewirte psoc flash tool with python for PSoC4 family, based on official python C
 
 ## Usage
 
+### For CCG3PA family:
 ```
 python flash.py ccg3pa path/to/hexfile.hex
 ```
 
-or
+### For CCG5 family:
 
 ```
+// this will keep Moku work under the same mode
 python flash.py ccg5 path/to/hexfile.hex
 
 // put device into factory test mode (AT mode)
 python flash.py ccg5 path/to/hexfile.hex --atmode
 ```
 
-if pre-compiled executables are used:
+## if pre-compiled executables are used:
 
 ```
+// this will keep Moku work under the same mode
 flash.exe ccg3pa path/to/hexfile.hex
 flash.exe ccg5 path/to/hexfile.hex
+
 // put device into factory test mode (AT mode)
 flash.exe ccg5 path/to/hexfile.hex --atmode
 ```
